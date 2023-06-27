@@ -1,0 +1,33 @@
+.root{
+	-fx-border-color: black;
+	-fx-border-width: 3;
+	-fx-border-style : solid;
+	-fx-border-radius: 5;
+}
+
+#buttons_container{
+	-fx-background-color: rgb(167,227,199);
+	-fx-background-radius: 12;
+	
+}
+.label{
+	-fx-text-fill: black;
+	-fx-font-weight: bold;
+}
+.button{
+	-fx-background-color: rgb(252,245,229);
+	-fx-background-radius: 10;
+	-fx-border-color: black;
+	-fx-border-width: 2.3;
+	-fx-border-style : solid;
+	-fx-border-radius: 10;
+	-fx-font-weight: bold;
+	
+}
+#screen_bg,#calculation_bg{
+	-fx-background-color: rgb(252,245,229)
+}
+#calculations{
+	-fx-text-fill: grey;
+}
+
