@@ -1,5 +1,7 @@
 package application;
 
+import java.util.ArrayList;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -48,101 +50,190 @@ public class CalculatorController {
 	@FXML
 	Label calculations;
 
-	private double result = 0;
-	String lastCalculation = "";
-	String lastVal = "";
-	String lastOperation;
+	private String currentVal;
+	private String displayCalculations;
+	private String finalCalculation;
+	private double result;
+	private Double num1;
+	private String lastNum = "";
+	private boolean firstnum = false;
+	private String lastOperator;
+	private ArrayList<String> oldVals = new ArrayList<>();
 
-	public void onClick(ActionEvent event) {
-		Button clickedBtn = (Button) event.getSource();
+	public void initialize() {
+		calculations.setVisible(false);
+		currentVal = "";
+		displayCalculations = "";
+		result = 0;
+		screen.setText("0");
+		num1 = null;
+		oldVals.clear();
+	}
 
-		// update working-out screen
-		if (!clickedBtn.getText().equals("DEL")
-				&& !clickedBtn.getText().equals("AC") && !clickedBtn.getText().equals("RESULT")) {
-			lastCalculation += clickedBtn.getText();
-			calculations.setText(lastCalculation);
+	@FXML
+	public void onNumClicked(ActionEvent event) {
+		Button btn = (Button) event.getSource();
+		String btnText = btn.getText();
+		lastNum += btnText;
+		System.out.println(currentVal);
+		// Take note of values pressed
+		if (!currentVal.contains(".") || !btnText.equals(".")) {
+			currentVal += btnText;
 		}
 
-		// deletes character for working-out screen
-		if (clickedBtn.getText().equals("DEL") && lastCalculation.length() > 0) {
-			lastCalculation = lastCalculation.substring(0, lastCalculation.length() - 1);
-			calculations.setText(lastCalculation);
+		// operations
+		if (lastOperator == ("+")) {
+			result += Double.parseDouble(lastNum);
+			oldVals.add(lastNum);
+
+			System.out.println(oldVals);
+			System.out.println("result: " + result);
+		}
+		if (lastOperator == ("-")) {
+			result -= Double.parseDouble(lastNum);
+			oldVals.add(lastNum);
+		}
+		if (lastOperator == ("×")) {
+			result *= Double.parseDouble(lastNum);
+			oldVals.add(lastNum);
+
+		}
+		if (lastOperator == ("/")) {
+			result /= Double.parseDouble(lastNum);
+			oldVals.add(lastNum);
+		}
+		if (lastOperator == ("Log")) {
+			result = Math.log10(Double.parseDouble(lastNum));
+			oldVals.add(lastNum);
 		}
 
-		// update main Screen value
-		if (!clickedBtn.getText().equals("DEL") && !clickedBtn.getText().equals("LOG")
-				&& !clickedBtn.getText().equals("AC") && !clickedBtn.getText().equals("+")
-				&& !clickedBtn.getText().equals("-") && !clickedBtn.getText().equals("/")
-				&& !clickedBtn.getText().equals("×")
-				&& !clickedBtn.getText().equals("RESULT")) {
-			lastVal += clickedBtn.getText();
-			screen.setText(lastVal);
-		}
+		// undo any changes until final/desired double value is made
+		for (int i = 0; oldVals.size() > 1 && i < oldVals.size() - 1; i++) {
 
-		// carry out operations
-		if (clickedBtn.getText().equals("+")) {
-			if (lastVal.length() > 0) {
-				result += Double.parseDouble(lastVal);
-				lastVal = "";
+			if (lastOperator == ("+")) {
+				result -= Double.parseDouble(oldVals.get(i));
+				oldVals.remove(i);
 			}
-			lastOperation = "+";
-		}
-
-		if (clickedBtn.getText().equals("-")) {
-			if (lastVal.length() > 0) {
-				result = Double.parseDouble(lastVal);
-				lastVal = "";
+			if (lastOperator == ("-")) {
+				result += Double.parseDouble(oldVals.get(i));
+				oldVals.remove(i);
 			}
-			lastOperation = "-";
-		}
-
-		if (clickedBtn.getText().equals("×")) {
-			if (lastVal.length() > 0) {
-				result = Double.parseDouble(lastVal);
-				lastVal = "";
-
+			if (lastOperator == ("×")) {
+				System.out.println("dividing by:" + Double.parseDouble(oldVals.get(i)));
+				result /= Double.parseDouble(oldVals.get(i));
+				oldVals.remove(i);
 			}
-			lastOperation = "*";
-		}
-		if (clickedBtn.getText().equals("/")) {
-			if (lastVal.length() > 0) {
-				result = Double.parseDouble(lastVal);
-				;
-				lastVal = "";
+			if (lastOperator == ("/")) {
+				result *= Double.parseDouble(oldVals.get(i));
+				oldVals.remove(i);
 			}
-			lastOperation = "/";
-		}
-		
-
-		// display result
-		if (clickedBtn.getText().equals("RESULT")) {
-			if (lastOperation.equals("+")) {
-				result += Double.parseDouble(lastVal);
-			} else if (lastOperation.equals("-")) {
-				result -= Double.parseDouble(lastVal);
-
-			} else if (lastOperation.equals("*")) {
-				result *= Double.parseDouble(lastVal);
-
-			} else if (lastOperation.equals("/")) {
-				result /= Double.parseDouble(lastVal);
-
-			} 
-			screen.setText(Double.toString(result));
-			lastCalculation = Double.toString(result);
-			lastVal = "";
-			lastOperation = "";
 		}
 
-		// Reset Everything
-		if (clickedBtn.getText().equals("AC")) {
-			result = 0;
-			lastVal = "";
-			lastCalculation = "";
-			screen.setText("0");
-			calculations.setText("0");
+		screen.setText(currentVal);
+
+	}
+
+	// remove characters from displayed value
+	@FXML
+	public void onDelete() {
+		currentVal = currentVal.substring(0, currentVal.length() - 1);
+		screen.setText(currentVal);
+
+	}
+
+	@FXML
+	public void onOperatorClicked(ActionEvent event) {
+		Button btn = (Button) event.getSource();
+		String operator = btn.getText();
+		if (num1 == null) {
+			num1 = Double.parseDouble(currentVal);
+			firstnum = true;
 		}
 
+		switch (operator) {
+		case "+": {
+			if (firstnum) {
+				result = num1;
+				firstnum = false;
+			}
+			lastNum = "";
+			lastOperator = "+";
+			break;
+		}
+		case "-": {
+			if (firstnum) {
+				result = num1;
+				firstnum = false;
+			}
+			lastNum = "";
+			lastOperator = "-";
+			break;
+		}
+		case "×": {
+			if (firstnum) {
+				result = num1;
+				firstnum = false;
+			}
+			lastNum = "";
+			lastOperator = "×";
+			break;
+		}
+		case "/": {
+			if (firstnum) {
+				result = num1;
+				firstnum = false;
+			}
+			lastNum = "";
+			lastOperator = "/";
+			break;
+		}
+
+		}
+		// displays result and operator
+		displayCalculations = Double.toString(result) + operator;
+		calculations.setText(displayCalculations);
+		screen.setText(Double.toString(result));
+		calculations.setVisible(true);
+		// resets values
+		currentVal = "";
+		finalCalculation = displayCalculations;
+		displayCalculations = "";
+		oldVals.clear();
+
+	}
+
+	@FXML
+	public void onLogClicked() {
+		if (firstnum) {
+			result = num1;
+			firstnum = false;
+		}
+		lastNum = "";
+		lastOperator = "Log";
+		displayCalculations += "Log(";
+		calculations.setText(displayCalculations);
+		screen.setText(Double.toString(result));
+		calculations.setVisible(true);
+		// resets values
+		currentVal = "";
+		finalCalculation = displayCalculations;
+		displayCalculations = "";
+		oldVals.clear();
+	}
+
+	// Displays result
+	@FXML
+	public void displayResult() {
+		calculations.setText(finalCalculation + lastNum + "=");
+		screen.setText(Double.toString(result));
+		oldVals.clear();
+
+	}
+
+	// reset everything
+	@FXML
+	public void reset() {
+		initialize();
 	}
 
 }
