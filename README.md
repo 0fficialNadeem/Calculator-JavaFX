@@ -4,7 +4,7 @@ This is a calculator application developed using JavaFX and styled with CSS. It 
 
 ## Features
 
-- Addition, subtraction, multiplication, and division operations
+- Addition, subtraction, multiplication,division and Log operations
 - Clear button to reset the calculator
 
 ## Technologies Used
