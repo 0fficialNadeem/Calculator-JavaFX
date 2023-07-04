@@ -13,15 +13,15 @@ This is a calculator application developed using JavaFX and styled with CSS. It 
 - CSS: Cascading Style Sheets used to style and customize the application's appearance.
 
 ## How to Use
-1.Clone the repository to your local machine.
+1. Clone the repository to your local machine.
 ### `https://github.com/0fficialNadeem/Calculator-JavaFX.git`
 
 
-2.Open the project in your preferred Java development environment (e.g., IntelliJ, Eclipse).
+2. Open the project in your preferred Java development environment (e.g., IntelliJ, Eclipse).
 
-3.Build and run the application.
+3. Build and run the application.
 
-4.Use the buttons on the calculator interface to perform calculations
+4. Use the buttons on the calculator interface to perform calculations
 
 ## Screenshots
 ![Screenshot (50)](https://github.com/0fficialNadeem/Calculator-JavaFX/assets/55362119/5407d4f4-02c6-4831-b9fd-87f23f6fcbc6)
