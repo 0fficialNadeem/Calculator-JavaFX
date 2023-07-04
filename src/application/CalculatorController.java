@@ -7,8 +7,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
+/**
+ * A Controller class that handles the functionality of the calculator by
+ * responding to events triggered within the GUI.
+ * 
+ * @author 0fficialNadeem (GitHub)
+ * @since 1.0
+ */
 public class CalculatorController {
-// Assigning components
+//Assigning components
 	@FXML
 	Button DEL;
 	@FXML
@@ -59,35 +66,52 @@ public class CalculatorController {
 	private boolean firstnum = false;
 	private String lastOperator;
 	private ArrayList<String> oldVals = new ArrayList<>();
+	private String firstOperatorSet;
 
+	/**
+	 * Handles the initial set-up of the calculator,code block runs automatically as
+	 * soon as GUI has loaded.
+	 * 
+	 * @since 1.0
+	 */
 	public void initialize() {
-		calculations.setVisible(false);
+		calculations.setVisible(false); // calculations not visible at start
 		currentVal = "";
 		displayCalculations = "";
 		result = 0;
 		screen.setText("0");
 		num1 = null;
 		oldVals.clear();
+		firstOperatorSet = null;
 	}
 
+	/**
+	 * Handles the event when a number button is clicked. Updates the current value
+	 * and performs calculations based on the last operator selected.
+	 * 
+	 * @param event the event representing the button click
+	 * @since 1.0
+	 */
 	@FXML
 	public void onNumClicked(ActionEvent event) {
 		Button btn = (Button) event.getSource();
 		String btnText = btn.getText();
 		lastNum += btnText;
-		System.out.println(currentVal);
+
 		// Take note of values pressed
 		if (!currentVal.contains(".") || !btnText.equals(".")) {
+			if (firstOperatorSet == ("-")) {
+				currentVal += "-";
+				firstOperatorSet = "";
+			}
 			currentVal += btnText;
+
 		}
 
 		// operations
 		if (lastOperator == ("+")) {
 			result += Double.parseDouble(lastNum);
 			oldVals.add(lastNum);
-
-			System.out.println(oldVals);
-			System.out.println("result: " + result);
 		}
 		if (lastOperator == ("-")) {
 			result -= Double.parseDouble(lastNum);
@@ -119,7 +143,6 @@ public class CalculatorController {
 				oldVals.remove(i);
 			}
 			if (lastOperator == ("×")) {
-				System.out.println("dividing by:" + Double.parseDouble(oldVals.get(i)));
 				result /= Double.parseDouble(oldVals.get(i));
 				oldVals.remove(i);
 			}
@@ -133,21 +156,38 @@ public class CalculatorController {
 
 	}
 
-	// remove characters from displayed value
+	/**
+	 * Removes the last character from the displayed value by returning a substring
+	 * with one character fewer then the previous.
+	 * 
+	 * @since 1.0
+	 */
 	@FXML
 	public void onDelete() {
 		currentVal = currentVal.substring(0, currentVal.length() - 1);
+		lastNum = lastNum.substring(0, lastNum.length() - 1);
 		screen.setText(currentVal);
 
 	}
+
+	/**
+	 * Handles the event when an operator button is clicked. Updates the
+	 * calculations label and takes note of the corresponding mathematical
+	 * operation.
+	 * 
+	 * @param event the event representing the button click
+	 * @since 1.0
+	 */
 
 	@FXML
 	public void onOperatorClicked(ActionEvent event) {
 		Button btn = (Button) event.getSource();
 		String operator = btn.getText();
 		if (num1 == null) {
-			num1 = Double.parseDouble(currentVal);
-			firstnum = true;
+			if (!currentVal.isEmpty()) {
+				num1 = Double.parseDouble(currentVal);
+				firstnum = true;
+			}
 		}
 
 		switch (operator) {
@@ -158,6 +198,7 @@ public class CalculatorController {
 			}
 			lastNum = "";
 			lastOperator = "+";
+			firstOperatorSet = "+";
 			break;
 		}
 		case "-": {
@@ -167,6 +208,9 @@ public class CalculatorController {
 			}
 			lastNum = "";
 			lastOperator = "-";
+			if (firstOperatorSet == null) {
+				firstOperatorSet = "-";
+			}
 			break;
 		}
 		case "×": {
@@ -176,6 +220,7 @@ public class CalculatorController {
 			}
 			lastNum = "";
 			lastOperator = "×";
+			firstOperatorSet = "×";
 			break;
 		}
 		case "/": {
@@ -185,6 +230,7 @@ public class CalculatorController {
 			}
 			lastNum = "";
 			lastOperator = "/";
+			firstOperatorSet = "/";
 			break;
 		}
 
@@ -199,20 +245,20 @@ public class CalculatorController {
 		finalCalculation = displayCalculations;
 		displayCalculations = "";
 		oldVals.clear();
-
 	}
 
+	/**
+	 * Handles the event when the log button is clicked. Updates the calculations
+	 * label and sets the last operator to "Log".
+	 * 
+	 * @since 1.0
+	 */
 	@FXML
 	public void onLogClicked() {
-		if (firstnum) {
-			result = num1;
-			firstnum = false;
-		}
 		lastNum = "";
 		lastOperator = "Log";
 		displayCalculations += "Log(";
 		calculations.setText(displayCalculations);
-		screen.setText(Double.toString(result));
 		calculations.setVisible(true);
 		// resets values
 		currentVal = "";
@@ -221,7 +267,12 @@ public class CalculatorController {
 		oldVals.clear();
 	}
 
-	// Displays result
+	/**
+	 * Displays the final calculation with an "=" sign and shows the result on the
+	 * main screen.
+	 * 
+	 * @since 1.0
+	 */
 	@FXML
 	public void displayResult() {
 		calculations.setText(finalCalculation + lastNum + "=");
@@ -230,7 +281,11 @@ public class CalculatorController {
 
 	}
 
-	// reset everything
+	/**
+	 * Resets the calculator to its default state (starting state).
+	 * 
+	 * @since 1.0
+	 */
 	@FXML
 	public void reset() {
 		initialize();
