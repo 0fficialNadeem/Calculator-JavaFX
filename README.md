@@ -6,6 +6,7 @@ This is a calculator application developed using JavaFX and styled with CSS. It 
 
 - Addition, subtraction, multiplication, division and Log operations
 - AC button to reset the calculator
+- DEL button to delete individual characters
 
 ## Technologies Used
 
