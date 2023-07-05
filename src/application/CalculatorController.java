@@ -1,6 +1,8 @@
 package application;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -67,6 +69,7 @@ public class CalculatorController {
 	private String lastOperator;
 	private ArrayList<String> oldVals = new ArrayList<>();
 	private String firstOperatorSet;
+	private double tempVal;
 
 	/**
 	 * Handles the initial set-up of the calculator,code block runs automatically as
@@ -96,7 +99,6 @@ public class CalculatorController {
 	public void onNumClicked(ActionEvent event) {
 		Button btn = (Button) event.getSource();
 		String btnText = btn.getText();
-		lastNum += btnText;
 
 		// Take note of values pressed
 		if (!currentVal.contains(".") || !btnText.equals(".")) {
@@ -104,6 +106,7 @@ public class CalculatorController {
 				currentVal += "-";
 				firstOperatorSet = "";
 			}
+			lastNum += btnText;
 			currentVal += btnText;
 
 		}
@@ -118,6 +121,9 @@ public class CalculatorController {
 			oldVals.add(lastNum);
 		}
 		if (lastOperator == ("×")) {
+			if (result != 0) {
+				tempVal = result;
+			}
 			result *= Double.parseDouble(lastNum);
 			oldVals.add(lastNum);
 
@@ -143,9 +149,19 @@ public class CalculatorController {
 				oldVals.remove(i);
 			}
 			if (lastOperator == ("×")) {
-				result /= Double.parseDouble(oldVals.get(i));
-				oldVals.remove(i);
+				String regex = "^0(\\.0*)?$";
+				Pattern pattern = Pattern.compile(regex);
+				Matcher matcher = pattern.matcher(oldVals.get(i));
+				if (result == 0) {
+					result = tempVal;
+				}
+				if (!matcher.find()) {
+					result /= Double.parseDouble(oldVals.get(i));
+					oldVals.remove(i);
+				}
+
 			}
+
 			if (lastOperator == ("/")) {
 				result *= Double.parseDouble(oldVals.get(i));
 				oldVals.remove(i);
@@ -153,6 +169,9 @@ public class CalculatorController {
 		}
 
 		screen.setText(currentVal);
+		if (Double.isInfinite(result)) {
+			screen.setText("Cannot divide by 0");
+		}
 
 	}
 
@@ -235,6 +254,7 @@ public class CalculatorController {
 		}
 
 		}
+
 		// displays result and operator
 		displayCalculations = Double.toString(result) + operator;
 		calculations.setText(displayCalculations);
